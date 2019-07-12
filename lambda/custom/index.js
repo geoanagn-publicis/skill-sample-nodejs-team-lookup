@@ -24,7 +24,7 @@ const data=[
 	{firstName:"memo",lastName:"doring",title:"a Solutions Architect on the Alexa Skills Team",cityName:"seattle",twitter:"memodoring",saytwitter:"memo doring",github:"memodoring",saygithub:"memo doring",linkedin:"https://www.linkedin.com/in/guillermodoring",saylinkedin:"guillermo doring",joinDate:"April 2016",gender:"m"},
 	{firstName:"jen",lastName:"gilbert",title:"a Marketing Manager on the Alexa Skills team",cityName:"seattle",twitter:"thejengil",saytwitter:"the jengil",github:"jengilbert",saygithub:"jen gilbert",linkedin:"https://www.linkedin.com/in/jenpaullgilbert/",saylinkedin:"jen paull gilbert",joinDate:"June 2016",gender:"f"}
 ];
-
+//commitmee!
 //======================================================================================================
 //TODO: Replace these text strings to edit the welcome and help messages
 //======================================================================================================
@@ -71,10 +71,10 @@ const newSessionHandlers = {
 		this.response.speak(WELCOME_MESSAGE).listen(getGenericHelpMessage(data));
 		this.emit(':responseReady');
 	},
-	"SearchByNameIntent": function() {
+	"SearchByNumberIntent": function() {
 		console.log("SEARCH INTENT");
 		this.handler.state = states.SEARCHMODE;
-		this.emitWithState("SearchByNameIntent");
+		this.emitWithState("SearchByNumberIntent");
 	},
 	"TellMeMoreIntent": function() {
 		this.handler.state = states.SEARCHMODE;
@@ -83,7 +83,7 @@ const newSessionHandlers = {
 	},
 	"TellMeThisIntent": function() {
 		this.handler.state = states.SEARCHMODE;
-		this.emitWithState("SearchByNameIntent");
+		this.emitWithState("SearchByNumberIntent");
 	},
 	"SearchByInfoTypeIntent": function() {
 		this.handler.state = states.SEARCHMODE;
@@ -124,7 +124,7 @@ const newSessionHandlers = {
 	},
 	"Unhandled": function() {
 		this.handler.state = states.SEARCHMODE;
-		this.emitWithState("SearchByNameIntent");
+		this.emitWithState("SearchByNumberIntent");
 	}
 };
 let startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
@@ -148,14 +148,8 @@ let startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
 		}
 		this.emit(":ask",output, output);
 	},
-	"SearchByNameIntent": function() {
-		searchByNameIntentHandler.call(this);
-	},
-	"SearchByCityIntent": function() {
-		searchByCityIntentHandler.call(this);
-	},
-	"SearchByInfoTypeIntent": function() {
-		searchByInfoTypeIntentHandler.call(this);
+	"SearchByUmberIntent": function() {
+		searchByNumberIntentHandler.call(this);
 	},
 	"TellMeThisIntent": function() {
 		this.handler.state = states.DESCRIPTION;
@@ -213,7 +207,7 @@ let multipleSearchResultsHandlers = Alexa.CreateStateHandler(states.MULTIPLE_RES
 		this.response.speak(this.attributes.lastSearch.lastSpeech).listen(this.attributes.lastSearch.lastSpeech);
 		this.emit(':responseReady');
 	},
-	"SearchByNameIntent": function() {
+	"SearchByNumberIntent": function() {
 		let slots = this.event.request.intent.slots;
 		let firstName = isSlotValid(this.event.request, "firstName");
 		let lastName = isSlotValid(this.event.request, "lastName");
@@ -256,10 +250,6 @@ let multipleSearchResultsHandlers = Alexa.CreateStateHandler(states.MULTIPLE_RES
 			this.response.speak(speechOutput).listen(speechOutput);
 		}
 		this.emit(':responseReady');
-	},
-	"SearchByCityIntent": function() {
-		this.handler.state = states.SEARCHMODE;
-		this.emitWithState("SearchByCityIntent");
 	},
 	"AMAZON.HelpIntent": function() {
 		this.response.speak(MULTIPLE_RESULTS_STATE_HELP_MESSAGE).listen(MULTIPLE_RESULTS_STATE_HELP_MESSAGE);
@@ -341,9 +331,6 @@ let descriptionHandlers = Alexa.CreateStateHandler(states.DESCRIPTION, {
 	},
 	"SearchByNameIntent": function() {
 		searchByNameIntentHandler.call(this);
-	},
-	"SearchByCityIntent": function() {
-		searchByCityIntentHandler.call(this);
 	},
 	"AMAZON.HelpIntent": function() {
 		var person = this.attributes.lastSearch.results[0];
@@ -495,134 +482,6 @@ function searchByNameIntentHandler(){
 	this.emit(':responseReady');
 }
 
-function searchByCityIntentHandler(){
-	var slots = this.event.request.intent.slots;
-	var cityName = isSlotValid(this.event.request, "cityName");
-
-	if (cityName){
-		var searchQuery = slots.cityName.value;
-		console.log("will begin search with  " + slots.cityName.value + " in cityName");
-		var searchResults = searchDatabase(data, searchQuery, "cityName");
-
-		//saving lastSearch results to the current session
-		let lastSearch = this.attributes.lastSearch = searchResults;
-		let output;
-
-		//saving last intent to session attributes
-		this.attributes.lastSearch.lastIntent = "SearchByNameIntent";
-
-		if (searchResults.count > 1) { //multiple results found
-			console.log("Search completed by city. Multiple results were found");
-			let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
-			output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
-			this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
-			this.attributes.lastSearch.lastSpeech = output;
-			this.response.speak(output).listen(output);
-		} else if (searchResults.count == 1) { //one result found
-			console.log("one match found");
-			this.handler.state = states.DESCRIPTION; // change state to description
-			output = generateSearchResultsMessage(searchQuery,searchResults.results);
-			this.attributes.lastSearch.lastSpeech = output;
-			// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-			this.response.speak(output).listen(output);
-
-		}
-		else{//no match found
-			console.log("no match found");
-			console.log("searchQuery was  = " + searchQuery);
-			console.log("searchResults.results was  = " + searchResults);
-			output = generateSearchResultsMessage(searchQuery,searchResults.results);
-			this.attributes.lastSearch.lastSpeech = output;
-			// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-			this.response.speak(output).listen(output);
-
-		}
-	}
-	else {
-		console.log("no searchable slot was provided");
-		console.log("searchQuery was  = " + searchQuery);
-		console.log("searchResults.results was  = " + searchResults);
-
-		this.response.speak(generateSearchResultsMessage(searchQuery,false)).listen(generateSearchResultsMessage(searchQuery,false));
-	}
-
-	this.emit(':responseReady');
-
-}
-
-function searchByInfoTypeIntentHandler(){
-	var slots = this.event.request.intent.slots;
-	var firstName = isSlotValid(this.event.request, "firstName");
-	var lastName = isSlotValid(this.event.request, "lastName");
-	var cityName = isSlotValid(this.event.request, "cityName");
-	var infoType = isSlotValid(this.event.request, "infoType");
-
-	var canSearch = figureOutWhichSlotToSearchBy(firstName,lastName,cityName);
-	console.log("canSearch is set to = " + canSearch);
-
-	if (canSearch){
-		var searchQuery = slots[canSearch].value;
-		var searchResults = searchDatabase(data, searchQuery, canSearch);
-
-		//saving lastSearch results to the current session
-		var lastSearch = this.attributes.lastSearch = searchResults;
-		var output;
-
-		//saving last intent to session attributes
-		this.attributes.lastSearch.lastIntent = "SearchByNameIntent";
-
-		if (searchResults.count > 1) { //multiple results found
-			console.log("multiple results were found");
-			let listOfPeopleFound = loopThroughArrayOfObjects(lastSearch.results);
-			output = generateSearchResultsMessage(searchQuery,searchResults.results) + listOfPeopleFound + ". Who would you like to learn more about?";
-			this.handler.state = states.MULTIPLE_RESULTS; // change state to MULTIPLE_RESULTS
-			this.attributes.lastSearch.lastSpeech = output;
-			this.response.speak(output).listen(output);
-		} else if (searchResults.count == 1) { //one result found
-			this.handler.state = states.DESCRIPTION; // change state to description
-			console.log("one match was found");
-			if (infoType) {
-				//if a specific infoType was requested, redirect to specificInfoIntent
-				console.log("infoType was provided as well");
-				let person = this.attributes.lastSearch.results[0];
-				let cardContent = generateCard(person);
-				let speechOutput = generateSpecificInfoMessage(slots,person);
-				let repromptSpeech = "Would you like to find another evangelist? Say yes or no";
-				this.attributes.lastSearch.lastSpeech = speechOutput;
-				this.handler.state = states.SEARCHMODE;
-				this.response.cardRenderer(cardContent.title, cardContent.body, cardContent.image);
-				this.response.speak(speechOutput).listen(repromptSpeech);
-				// this.emitWithState("TellMeThisIntent");
-			}
-			else{
-				console.log("no infoType was provided.");
-				output = generateSearchResultsMessage(searchQuery,searchResults.results);
-				this.attributes.lastSearch.lastSpeech = output;
-				// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-				this.response.speak(output).listen(output);
-			}
-		}
-		else{//no match found
-			console.log("no match found");
-			console.log("searchQuery was  = " + searchQuery);
-			console.log("searchResults.results was  = " + searchResults);
-			output = generateSearchResultsMessage(searchQuery,searchResults.results);
-			this.attributes.lastSearch.lastSpeech = output;
-			// this.emit(":ask", generateSearchResultsMessage(searchQuery,searchResults.results));
-			this.response.speak(output).listen(output);
-		}
-	}
-	else {
-		console.log("no searchable slot was provided");
-		console.log("searchQuery was  = " + searchQuery);
-		console.log("searchResults.results was  = " + searchResults);
-
-		this.response.speak(generateSearchResultsMessage(searchQuery,false)).listen(generateSearchResultsMessage(searchQuery,false));
-	}
-
-	this.emit(':responseReady');
-
-}
 // =====================================================================================================
 // ------------------------------- Section 3. Generating Speech Messages -------------------------------
 // =====================================================================================================

@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "team lookup",
+      "invocationName": "order lookup",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
@@ -43,55 +43,7 @@
           "samples": []
         },
         {
-          "name": "SearchByCityIntent",
-          "samples": [
-            "who is in {cityName} ",
-            "find me an evangelist in {cityName} ",
-            "find me someone in {cityName} ",
-            "{cityName} ",
-            "{cityName} evangelist"
-          ],
-          "slots": [
-            {
-              "name": "cityName",
-              "type": "AMAZON.US_CITY",
-              "samples": []
-            }
-          ]
-        },
-        {
-          "name": "SearchByInfoTypeIntent",
-          "samples": [
-            "{whatPhrase} {firstName} {lastName} {infoType}",
-            "{whatPhrase} {lastName} {infoType}",
-            "{whatPhrase} {firstName}  {infoType} handle",
-            "{whatPhrase} {firstName} {infoType} username"
-          ],
-          "slots": [
-            {
-              "name": "firstName",
-              "type": "AMAZON.US_FIRST_NAME",
-              "samples": []
-            },
-            {
-              "name": "lastName",
-              "type": "LAST_NAME",
-              "samples": []
-            },
-            {
-              "name": "infoType",
-              "type": "LIST_OF_INFO_TYPES",
-              "samples": []
-            },
-            {
-              "name": "whatPhrase",
-              "type": "WHAT_PHRASE",
-              "samples": []
-            }
-          ]
-        },
-        {
-          "name": "SearchByNameIntent",
+          "name": "SearchByNumberIntent",
           "samples": [
             "{firstName}",
             "{lastName}",
