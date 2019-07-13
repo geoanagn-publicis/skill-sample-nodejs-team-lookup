@@ -24,7 +24,6 @@ const data=[
 	{firstName:"memo",lastName:"doring",title:"a Solutions Architect on the Alexa Skills Team",cityName:"seattle",twitter:"memodoring",saytwitter:"memo doring",github:"memodoring",saygithub:"memo doring",linkedin:"https://www.linkedin.com/in/guillermodoring",saylinkedin:"guillermo doring",joinDate:"April 2016",gender:"m"},
 	{firstName:"jen",lastName:"gilbert",title:"a Marketing Manager on the Alexa Skills team",cityName:"seattle",twitter:"thejengil",saytwitter:"the jengil",github:"jengilbert",saygithub:"jen gilbert",linkedin:"https://www.linkedin.com/in/jenpaullgilbert/",saylinkedin:"jen paull gilbert",joinDate:"June 2016",gender:"f"}
 ];
-//commitmee!
 //======================================================================================================
 //TODO: Replace these text strings to edit the welcome and help messages
 //======================================================================================================
