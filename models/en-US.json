@@ -46,24 +46,17 @@
           "name": "SearchByNumberIntent",
           "samples": [
             "{firstName}",
-            "{lastName}",
-            "{firstName} {lastName}",
+            "{firstName}",
             "{whoPhrase} {firstName} ",
-            "{whoPhrase} {firstName} {lastName} ",
-            "{whoPhrase} {lastName} ",
-            "{whatPhrase} {firstName} {lastName} {infoType} username",
+            "{whoPhrase} {firstName}",
+            "{whatPhrase} {firstName} {infoType} username",
             "{whatPhrase} {infoType} for {firstName} ",
-            "{whatPhrase} {firstName} {lastName} {infoType} handle"
+            "{whatPhrase} {firstName} {infoType} handle"
           ],
           "slots": [
             {
               "name": "firstName",
               "type": "AMAZON.US_FIRST_NAME",
-              "samples": []
-            },
-            {
-              "name": "lastName",
-              "type": "LAST_NAME",
               "samples": []
             },
             {
@@ -158,61 +151,6 @@
             {
               "name": {
                 "value": "dean"
-              }
-            }
-          ]
-        },
-        {
-          "name": "LAST_NAME",
-          "values": [
-            {
-              "name": {
-                "value": "cutsinger"
-              }
-            },
-            {
-              "name": {
-                "value": "blankenburg"
-              }
-            },
-            {
-              "name": {
-                "value": "doring"
-              }
-            },
-            {
-              "name": {
-                "value": "mccauley"
-              }
-            },
-            {
-              "name": {
-                "value": "isbitsky"
-              }
-            },
-            {
-              "name": {
-                "value": "palermo"
-              }
-            },
-            {
-              "name": {
-                "value": "jotwani"
-              }
-            },
-            {
-              "name": {
-                "value": "myers"
-              }
-            },
-            {
-              "name": {
-                "value": "bryen"
-              }
-            },
-            {
-              "name": {
-                "value": "gilbert"
               }
             }
           ]
