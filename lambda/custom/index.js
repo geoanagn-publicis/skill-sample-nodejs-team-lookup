@@ -80,14 +80,6 @@ const newSessionHandlers = {
 		this.response.speak(WELCOME_MESSAGE).listen(getGenericHelpMessage(data));
 		this.emit(':responseReady');
 	},
-	"TellMeThisIntent": function() {
-		this.handler.state = states.SEARCHMODE;
-		this.emitWithState("SearchByNumberIntent");
-	},
-	"SearchByInfoTypeIntent": function() {
-		this.handler.state = states.SEARCHMODE;
-		this.emitWithState("SearchByInfoTypeIntent");
-	},
 	"AMAZON.YesIntent": function() {
 		this.response.speak(getGenericHelpMessage(data)).listen(getGenericHelpMessage(data));
 		this.emit(':responseReady');
@@ -147,12 +139,8 @@ let startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
 		}
 		this.emit(":ask",output, output);
 	},
-	"SearchByUmberIntent": function() {
+	"SearchByNumberIntent": function() {
 		searchByNumberIntentHandler.call(this);
-	},
-	"TellMeThisIntent": function() {
-		this.handler.state = states.DESCRIPTION;
-		this.emitWithState("TellMeThisIntent");
 	},
 	"TellMeMoreIntent": function() {
 		this.handler.state = states.DESCRIPTION;
@@ -209,18 +197,11 @@ let multipleSearchResultsHandlers = Alexa.CreateStateHandler(states.MULTIPLE_RES
 	"SearchByNumberIntent": function() {
 		let slots = this.event.request.intent.slots;
 		let firstName = isSlotValid(this.event.request, "firstName");
-		let lastName = isSlotValid(this.event.request, "lastName");
-		let cityName = isSlotValid(this.event.request, "cityName");
-		let infoType = isSlotValid(this.event.request, "infoType");
 
 		console.log("firstName:" + firstName);
-		console.log("firstName:" + lastName);
-		console.log("firstName:" + cityName);
-		console.log("firstName:" + infoType);
 		console.log("Intent Name:" + this.event.request.intent.name);
 
-		let canSearch = figureOutWhichSlotToSearchBy(firstName,lastName,cityName);
-		console.log("Multiple results found. canSearch is set to = " + canSearch);
+		let canSearch = "firstname";
 		let speechOutput;
 
 		if (canSearch)
@@ -299,35 +280,6 @@ let descriptionHandlers = Alexa.CreateStateHandler(states.DESCRIPTION, {
 
 		this.emit(':responseReady');
 	},
-	"TellMeThisIntent": function() {
-		let slots = this.event.request.intent.slots;
-		let person = this.attributes.lastSearch.results[0];
-		let infoType = isSlotValid(this.event.request, "infoType");
-		let speechOutput;
-		let repromptSpeech;
-		let cardContent;
-
-		console.log(isInfoTypeValid("github"));
-
-		if(this.attributes.lastSearch && isInfoTypeValid(infoType)){
-			person =  this.attributes.lastSearch.results[0];
-			cardContent = generateCard(person);
-			speechOutput = generateSpecificInfoMessage(slots,person);
-			repromptSpeech = "Would you like to find another evangelist? Say yes or no";
-			this.handler.state = states.SEARCHMODE;
-			this.attributes.lastSearch.lastSpeech = speechOutput;
-			this.response.cardRenderer(cardContent.title, cardContent.body, cardContent.image);
-			this.response.speak(speechOutput).listen(repromptSpeech);
-		} else {
-			//not a valid slot. no card needs to be set up. respond with simply a voice response.
-			speechOutput = generateSearchHelpMessage(person.gender);
-			repromptSpeech = "You can ask me - what's " + genderize("his-her", person.gender) + " twitter, or give me " + genderize("his-her", person.gender) + " git-hub username";
-			this.attributes.lastSearch.lastSpeech = speechOutput;
-			this.handler.state = states.SEARCHMODE;
-			this.response.speak(speechOutput).listen(repromptSpeech);
-		}
-		this.emit(':responseReady');
-	},
 	"SearchByNameIntent": function() {
 		searchByNameIntentHandler.call(this);
 	},
@@ -399,32 +351,11 @@ function searchDatabase(dataset, searchQuery, searchType) {
 	};
 }
 
-function figureOutWhichSlotToSearchBy(firstName,lastName,cityName) {
-	if (lastName){
-		console.log("search by lastName");
-		return "lastName";
-	}
-	else if (!lastName && firstName){
-		console.log("search by firstName");
-		return "firstName";
-	}
-	else if (!lastName && !firstName && cityName){
-		console.log("search by cityName");
-		return "cityName";
-	}
-	else{
-		console.log("no valid slot provided. can't search.");
-		return false;
-	}
-}
-
 function searchByNameIntentHandler(){
 	let firstName = isSlotValid(this.event.request, "firstName");
-	let lastName = isSlotValid(this.event.request, "lastName");
-	let cityName = isSlotValid(this.event.request, "cityName");
 	let infoType = isSlotValid(this.event.request, "infoType");
 
-	let canSearch = figureOutWhichSlotToSearchBy(firstName,lastName,cityName);
+	let canSearch = figureOutWhichSlotToSearchBy(firstName);
 	console.log("canSearch is set to = " + canSearch);
 
 	if (canSearch){
@@ -450,9 +381,7 @@ function searchByNameIntentHandler(){
 			console.log("one match was found");
 			if (infoType) {
 				//if a specific infoType was requested, redirect to specificInfoIntent
-				console.log("infoType was provided as well");
-				this.emitWithState("TellMeThisIntent");
-			}
+				console.log("infoType was provided as well");			}
 			else{
 				console.log("no infoType was provided.");
 				output = generateSearchResultsMessage(searchQuery,searchResults.results);
@@ -547,6 +476,11 @@ function generateTellMeMoreMessage(person){
 	let sentence = person.firstName + " joined the Alexa team in " + person.joinDate + ". " + genderize("his-her", person.gender) + " Twitter handle is " + person.saytwitter + " . " + generateSendingCardToAlexaAppMessage(person,"general");
 	return sentence;
 }
+
+function init(){
+	console.log("init");
+}
+
 function generateSpecificInfoMessage(slots,person){
 	let infoTypeValue;
 	let sentence;
